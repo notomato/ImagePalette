@@ -85,7 +85,7 @@ array (
 By default, `ImagePalette` will process every 10th pixel. This is for performance reasons, you can change this like below. The precision is a performance-to-time decision.
 
 ```PHP
-$image = new \bfoxwell\ImagePalette\ImagePalette( $src, 5 /* precision */ );
+$image = new \Bfoxwell\ImagePalette\ImagePalette( $src, 5 /* precision */ );
 ```
 
 #### Color Count
@@ -93,7 +93,7 @@ $image = new \bfoxwell\ImagePalette\ImagePalette( $src, 5 /* precision */ );
 To control the amount colors returned set the third parameter.
 
 ```PHP
-$image = new \bfoxwell\ImagePalette\ImagePalette( $src, 5, 3 /* number of colors to return */ );
+$image = new \Bfoxwell\ImagePalette\ImagePalette( $src, 5, 3 /* number of colors to return */ );
 ```
 
 ## Contribution guidelines ##

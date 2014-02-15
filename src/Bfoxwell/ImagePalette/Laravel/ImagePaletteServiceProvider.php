@@ -43,12 +43,11 @@ class ImagePaletteServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app['image-palette'] = $this->app->share(
-            function ($app)
-			{
-                return new Facade();
-            }
-        );
+        $this->app['image-palette'] = function ($app)
+		{
+			return new Facade();
+		};
+
     }
 
     /**

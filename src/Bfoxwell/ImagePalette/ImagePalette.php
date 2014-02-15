@@ -238,7 +238,7 @@ class ImagePalette
     /**
      * Detect Transparency using GD
 	 *
-     * @param $rgba
+     * @param integer $rgba
      * @return bool
      */
     public function detectTransparency($rgba)

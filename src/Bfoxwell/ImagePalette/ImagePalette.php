@@ -85,55 +85,20 @@ class ImagePalette
     public $RGBWhiteList = array();
 
 
-    /**
-     * Constructor
-     * @param string $image
-     * @param int $precision
-     * @param int $numColorsOnPalette
-     */
+	/**
+	 * Constructor
+	 * @param string $image
+	 * @param int $precision
+	 * @param int $numColorsOnPalette
+	 * @param null $overrideLib
+	 */
     public function __construct($image, $precision = 10, $numColorsOnPalette = 5, $overrideLib = null)
     {
         $this->file = $image;
         $this->precision = $precision;
         $this->numColorsOnPalette = $numColorsOnPalette;
         $this->setRGBWhiteList();
-        $this->process($this->detectLib($overrideLib));
-    }
-
-
-    /**
-     * Autodetect and pick a graphical library to use for processing.
-     * @param $lib
-     * @return string
-     */
-    protected function detectLib($lib)
-    {
-        if( ! $lib) {
-            try {
-                if (extension_loaded('gd') && function_exists('gd_info')) {
-
-                    return 'GD';
-
-                } else if(extension_loaded('imagick')) {
-
-                    return 'Imagick';
-
-                } else if(extension_loaded('gmagick')) {
-
-                    return 'Gmagick';
-
-                }
-
-                throw new \Exception(
-                    "Try installing one of the following graphic libraries php5-gd, php5-imagick, php5-gmagick.
-                ");
-
-            } catch(\Exception $e) {
-                echo $e->getMessage() . "\n";
-            }
-        }
-
-        return $lib;
+        $this->process();
     }
 
 
@@ -143,31 +108,10 @@ class ImagePalette
      * @param string $overrideLib
      * @throws \Exception
      */
-    protected function process($overrideLib)
+    protected function process()
     {
-        try{
-            switch($overrideLib) {
-                case "GD":
-                    $this->setWorkingImageGD($this->file);
-                    $this->readPixelsGD();
-                    break;
-                case "Imagick":
-                    $this->setWorkingImageImagick($this->file);
-                    $this->readPixelsImagick();
-                    break;
-                case "Gmagick":
-                    $this->setWorkingImageGmagick($this->file);
-                    $this->readPixelsGmagick();
-                    break;
-                default:
-                    throw new \Exception(
-                        "You've selected an incorrect graphic library.
-                        \nThe defaults are:". '"GD", "Imagick", and "Gmagick"'
-                    );
-            }
-        } catch(\Exception $e) {
-            echo $e->getMessage() . "\n";
-        }
+		$this->setWorkingImageGD($this->file);
+		$this->readPixelsGD();
     }
 
     /**
@@ -246,40 +190,6 @@ class ImagePalette
         }
     }
 
-	/**
-	 * Load and set working image
-	 *
-	 * @todo needs work
-	 * @param $image
-	 * @param string $image
-	 * @return mixed
-	 */
-	private function setWorkingImageGmagick($image)
-	{
-		return $image;
-	}
-
-	/**
-	 * Load and set working image
-	 *
-	 * @todo needs work
-	 * @param $image
-	 * @param string $image
-	 * @return mixed
-	 */
-    private function setWorkingImageImagick($image)
-    {
-
-        $file = file_get_contents($image);
-        $temp = tempnam("/tmp", uniqid("ImagePalette_",true));
-        file_put_contents($temp, $file);
-
-        $this->loadedImage = new Imagick($temp);
-        $this->setImagesizeImagick();
-    }
-
-
-
     /**
      * Get and set size of the image using GD.
      */
@@ -288,16 +198,6 @@ class ImagePalette
         $dimensions = getimagesize($this->file);
         $this->width = $dimensions[0];
         $this->height = $dimensions[1];
-    }
-
-    /**
-     * Get and set size of image using ImageMagick.
-     */
-    private function setImageSizeImagick()
-    {
-        $d = $this->loadedImage->getImageGeometry();
-        $this->width = $d['width'];
-        $this->height = $d['height'];
     }
 
     /**
@@ -322,28 +222,10 @@ class ImagePalette
         }
     }
 
-    public function readPixelsImagick()
-    {
-        for ($x = 0; $x < $this->width; $x += $this->precision) { // Row
-            for ($y = 0; $y < $this->height; $y += $this->precision) { // Column
-                $index = $this->loadedImage->getImagePixelColor($x, $y);
-                if ($this->detectTransparency($index)) {
-                    $this->loadedImageColors[] = "transparent";
-                    continue;
-                }
-                $rgb = $index->getColor();
-                $this->loadedImageColors[] = $this->getClosestColor($rgb["r"],$rgb["g"],$rgb["b"]);
-            }
-        }
-    }
-
-	public function readPixelsGmagick()
-	{
-		return;
-	}
 
     /**
      * Detect Transparency using GD
+	 *
      * @param $rgba
      * @return bool
      */
@@ -351,14 +233,12 @@ class ImagePalette
     {
         $alpha = ($rgba & 0x7F000000) >> 24;
 
-        if ($alpha === 127)
-            return true;
-
-        return false;
+        return ($alpha === 127);
     }
 
     /**
      * Get closest matching color
+	 *
      * @param $r
      * @param $g
      * @param $b

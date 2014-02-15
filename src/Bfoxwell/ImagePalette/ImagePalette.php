@@ -259,6 +259,8 @@ class ImagePalette
     public function getClosestColor($r, $g, $b)
     {
         $key = '';
+		$diffArray = array();
+
         foreach ($this->RGBWhiteList as $value)
 		{
             // Push difference into diffArray

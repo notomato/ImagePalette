@@ -10,10 +10,11 @@
 
 namespace Bfoxwell\ImagePalette\Laravel;
 
+use Bfoxwell\ImagePalette\Facade;
 use Illuminate\Support\ServiceProvider;
-use Bfoxwell\ImagePalette\Client;
 
-class ImagePaletteServiceProvider extends ServiceProvider {
+class ImagePaletteServiceProvider extends ServiceProvider
+{
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -39,8 +40,9 @@ class ImagePaletteServiceProvider extends ServiceProvider {
     public function register()
     {
         $this->app['image-palette'] = $this->app->share(
-            function ($app) {
-                return new Client;
+            function ($app)
+			{
+                return new Facade();
             }
         );
     }

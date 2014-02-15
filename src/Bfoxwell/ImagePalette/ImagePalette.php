@@ -11,7 +11,7 @@
 namespace Bfoxwell\ImagePalette;
 
 use Bfoxwell\ImagePalette\Exception\UnsupportedFileTypeException;
-use Imagick;
+use Bfoxwell\ImagePalette\Exception\RuntimeException;
 
 /**
  * Class ImagePalette
@@ -24,49 +24,56 @@ use Imagick;
 class ImagePalette
 {
     /**
-     * File or Url
+     * File or URL
      * @var string
      */
     public $file;
 
     /**
      * Loaded Image
-     * @var object
+	 *
+     * @var resource
      */
     public $loadedImage;
 
     /**
      * Loaded Image Colors in Hex
+	 *
      * @var array
      */
     public $loadedImageColors = array();
 
 	/**
 	 * Process every Nth pixel
+	 *
 	 * @var int
 	 */
 	public $precision;
 
     /**
      * Width of image
+	 *
      * @var integer
      */
     public $width;
 
     /**
      * Height of image
+	 *
      * @var integer
      */
     public $height;
 
     /**
      * Number of colors to return
+	 *
      * @var integer
      */
     public $numColorsOnPalette;
 
     /**
      * Hex Whitelist
+	 *
      * @var array
      */
     public $hexWhiteList = array(
@@ -80,20 +87,21 @@ class ImagePalette
 
     /**
      * RGB Whitelist
+	 *
      * @var array
      */
     public $RGBWhiteList = array();
 
-
 	/**
 	 * Constructor
+	 *
 	 * @param string $image
 	 * @param int $precision
 	 * @param int $numColorsOnPalette
-	 * @param null $overrideLib
 	 */
-    public function __construct($image, $precision = 10, $numColorsOnPalette = 5, $overrideLib = null)
+    public function __construct($image, $precision = 10, $numColorsOnPalette = 5)
     {
+		$this->requireGD();
         $this->file = $image;
         $this->precision = $precision;
         $this->numColorsOnPalette = $numColorsOnPalette;
@@ -101,13 +109,9 @@ class ImagePalette
         $this->process();
     }
 
-
-    /**
-     * Select a graphical library and start generating the Image Palette
-     * @param $overrideLib
-     * @param string $overrideLib
-     * @throws \Exception
-     */
+	/**
+	 * Select a graphical library and start generating the Image Palette
+	 */
     protected function process()
     {
 		$this->setWorkingImageGD($this->file);
@@ -116,18 +120,20 @@ class ImagePalette
 
     /**
      * Create an array of Hex and RGB values from Hex Whitelist
+	 *
      * @return array
      */
     private function setRGBWhiteList()
     {
-        foreach ($this->hexWhiteList as $hex) {
+        foreach ($this->hexWhiteList as $hex)
+		{
             $this->RGBWhiteList[] = $this->HexToRGB($hex);
         }
     }
 
     /**
      * Convert Hex to RGB
-     * @todo Move to ColorConversions File
+	 *
      * @param $hex
      * @return array
      */
@@ -135,11 +141,14 @@ class ImagePalette
     {
         $hex = str_replace("#", "", $hex);
 
-        if (strlen($hex) == 3) {
+        if (strlen($hex) == 3)
+		{
             $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
             $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
             $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
-        } else {
+        }
+		else
+		{
             $r = hexdec(substr($hex, 0, 2));
             $g = hexdec(substr($hex, 2, 2));
             $b = hexdec(substr($hex, 4, 2));
@@ -162,7 +171,8 @@ class ImagePalette
 
         try {
 
-            switch ($fileExtension) {
+            switch ($fileExtension)
+			{
                 case "png":
                     $imageCreate = "imagecreatefrompng";
                     break;
@@ -205,23 +215,25 @@ class ImagePalette
      */
     public function readPixelsGD()
     {
-        for ($x = 0; $x < $this->width; $x += $this->precision) { // Row
-            for ($y = 0; $y < $this->height; $y += $this->precision) { // Column
+        for ($x = 0; $x < $this->width; $x += $this->precision) // Row
+		{
+            for ($y = 0; $y < $this->height; $y += $this->precision)  // Column
+			{
                 $index = imagecolorat($this->loadedImage, $x, $y);
 
                 // Detect and set transparent value
-                if ($this->detectTransparency($index)) {
+                if ($this->detectTransparency($index))
+				{
                     $this->loadedImageColors[] = "transparent";
                     continue;
                 }
 
-                $rgb = imagecolorsforindex($this->loadedImage, $index);
+				$rgb = imagecolorsforindex($this->loadedImage, $index);
 
                 $this->loadedImageColors[] = $this->getClosestColor($rgb["red"], $rgb["green"], $rgb["blue"]);
             }
         }
     }
-
 
     /**
      * Detect Transparency using GD
@@ -247,8 +259,8 @@ class ImagePalette
     public function getClosestColor($r, $g, $b)
     {
         $key = '';
-        foreach ($this->RGBWhiteList as $value) {
-
+        foreach ($this->RGBWhiteList as $value)
+		{
             // Push difference into diffArray
             $diffArray[] = $this->getSimpleColorDiff($r, $value[0], $g, $value[1], $b, $value[2]);
 
@@ -265,7 +277,7 @@ class ImagePalette
 
     /**
      * Simple Color Difference Calculation
-     * @todo Move to ColorCalculations
+	 *
      * @param $r
      * @param $rVal
      * @param $g
@@ -287,6 +299,7 @@ class ImagePalette
 
     /**
      * Get colors
+	 *
      * @return array
      */
     public function getColors()
@@ -296,7 +309,9 @@ class ImagePalette
 
         //unset transparent
         if (array_key_exists('transparent', $countEachColor))
-            unset($countEachColor['transparent']);
+		{
+			unset($countEachColor['transparent']);
+		}
 
         // Sort numerically
         asort($countEachColor, SORT_NUMERIC);
@@ -307,7 +322,8 @@ class ImagePalette
         $i = 0;
         $prominent = array();
 
-        foreach ($colors as $hex => $count) {
+        foreach ($colors as $hex => $count)
+		{
             $prominent[] = $hex;
             $i++;
             if ($i >= $this->numColorsOnPalette) break;
@@ -315,4 +331,17 @@ class ImagePalette
 
         return $prominent;
     }
+
+	/**
+	 * Require GD to be installed.
+	 *
+	 * @throws RuntimeException
+	 */
+	private function requireGD()
+	{
+		if ( ! function_exists('gd_info'))
+		{
+			throw new RuntimeException('Please install GD.');
+		}
+	}
 }

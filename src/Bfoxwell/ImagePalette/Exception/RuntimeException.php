@@ -11,9 +11,9 @@
 namespace Bfoxwell\ImagePalette\Exception;
 
 /**
- * Class UnsupportedFileTypeException
- * @package bfoxwell\ImagePalette
+ * Class RuntimeException
+ * @package Bfoxwell\ImagePalette\Exception
  */
-class UnsupportedFileTypeException extends RuntimeException
+class RuntimeException extends \RuntimeException implements Exception
 {
-} 
+}

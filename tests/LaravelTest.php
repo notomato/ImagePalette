@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-use Bfoxwell\ImagePalette\Client;
+use Bfoxwell\ImagePalette\Facade;
 
 /**
  * Class LaravelTest
@@ -21,7 +21,7 @@ class LaravelTest extends PHPUnit_Framework_Testcase {
      */
     public function testDoesClientReturnArray()
     {
-        $load = new Client;
+        $load = new Facade;
         $colors = $load->getColors(__DIR__.'/images/logo11w.png', 5);
         return $this->assertTrue(is_array($colors));
     }

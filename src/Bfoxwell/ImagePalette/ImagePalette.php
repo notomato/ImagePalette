@@ -19,7 +19,7 @@ use Bfoxwell\ImagePalette\Exception\RuntimeException;
  * Gets the prominent colors in a given image. To get common color matching, all pixels are matched
  * against a white-listed color palette.
  *
- * @package bfoxwell\ImagePalette
+ * @package Bfoxwell\ImagePalette
  */
 class ImagePalette
 {

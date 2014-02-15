@@ -11,8 +11,8 @@
 namespace Bfoxwell\ImagePalette\Exception;
 
 /**
- * ImagePalette Specific Exception
- * @package bfoxwell\ImagePalette
+ * Interface Exception
+ * @package Bfoxwell\ImagePalette\Exception
  */
 interface Exception
 {

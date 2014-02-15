@@ -13,6 +13,10 @@ namespace Bfoxwell\ImagePalette\Laravel;
 use Bfoxwell\ImagePalette\Facade;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class ImagePaletteServiceProvider
+ * @package Bfoxwell\ImagePalette\Laravel
+ */
 class ImagePaletteServiceProvider extends ServiceProvider
 {
     /**

@@ -12,7 +12,7 @@ namespace Bfoxwell\ImagePalette;
 
 /**
  * Class Facade
- * @package bfoxwell\ImagePalette
+ * @package Bfoxwell\ImagePalette
  */
 class Facade
 {

@@ -170,7 +170,7 @@ class ImagePalette implements IteratorAggregate
 	 */
     protected function setWorkingImageGD()
     {
-        $extension = pathinfo($this->file, PATHINFO_EXTENSION);
+        $extension = parse_url(pathinfo($this->file, PATHINFO_EXTENSION), PHP_URL_PATH);
 
         switch (strtolower($extension))
         {
